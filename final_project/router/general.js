@@ -78,27 +78,47 @@ public_users.get('/isbn/:isbn',function (req, res) {
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
     const author = req.params.author;
-    let books_array = Object.values(books);
-    let books_items = new Array();
-    for(i=0; i<books_array.length; i++) {
-        let books_item = books_array[i];
-        if((books_item.author) == author) {
-            books_items.push(books_item);
-        }
-    }
-    return res.send(books_items);
+    let errmsg = "No books available for this author";
+    let myPromise3 = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            try{
+                let books_array = Object.values(books);
+                let books_items = new Array();
+                for(i=0; i<books_array.length; i++) {
+                    let books_item = books_array[i];
+                    if((books_item.author) == author) {
+                        books_items.push(books_item);
+                    }
+                }
+                resolve(res.send(books_item));
+            } catch(err) {
+                reject(err)
+            }          
+        },6000)
+    })
+    myPromise3.then((err) => console.log(errmsg));
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
     const title = req.params.title;
-    let books_array = Object.values(books);
-    for(i=0; i<books_array.length; i++) {
-        let books_item = books_array[i];
-        if((books_item.title) == title) {
-            return res.send(books_item);
-        }
-    }
+    let errmsg = "No books available for this title";
+    let myPromise4 = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            try{
+                let books_array = Object.values(books);
+                for(i=0; i<books_array.length; i++) {
+                    let books_item = books_array[i];
+                    if((books_item.title) == title) {
+                        resolve(res.send(books_item));
+                    }
+                }                
+            } catch(err) {
+                reject(err)
+            }        
+        },6000)
+    })
+    myPromise4.then((err) => console.log(errmsg));
 });
 
 //  Get book review
