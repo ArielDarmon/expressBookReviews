@@ -14,9 +14,34 @@ const authenticatedUser = (username,password)=>{ //returns boolean
 }
 
 //only registered users can login
-regd_users.post("/login", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+regd_users.post("/login", async (req,res) => {
+    const username = req.query.username;
+    const password = req.query.password;
+
+    users = Object.values(users);
+
+    if(!username) {
+        res.send("Please enter a username!");
+    }
+    if(!password) {
+        res.send("Please enter a password!");
+    }
+    try {
+        const user = await users.findOne({ username });
+        if (!user) {
+            return res.status(401).json({ error: 'Authentication failed. No user found.' });
+        }
+        const passwordMatch = await users.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Authentication failed. Password error.' });
+        }
+        const token = jwt.sign({ userId: user._id }, 'my-secret-key', {
+            expiresIn: '1h',
+        });
+        res.status(200).json({ token });
+    } catch (error) {
+        res.status(500).json({ error: 'Login failed' });
+    }
 });
 
 // Add a book review
